@@ -21,19 +21,20 @@ export default {
   props: ['todo', 'index'],
   data () {
     return {
+      editTitle: '',
       editTodo: false,
     };
   },
   methods: {
     changeEditTodos () {
       this.editTodo = !this.editTodo;
-      this.$emit('ChangeTodo');
+      this.$emit('changeTodoTitle', this.index, this.editTitle);
     },
     changeCompleted () {
       this.$emit('changeTodoCompleted', this.index);
     },
     changeTodoTitle (StrTitle) {
-      this.$emit('changeTodoTitle', this.index, StrTitle);
+      this.editTitle = StrTitle;
     },
     deleteTodo () {
       this.$emit('deleteTodo', this.todo.id);
