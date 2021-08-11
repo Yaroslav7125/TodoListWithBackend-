@@ -1,7 +1,11 @@
-const Koa = require('koa');
-const Router = require('koa-router');
 const cors = require('@koa/cors');
-const  {DataTypes,QueryTypes,Sequelize} = require('sequelize')
+const Koa = require('koa');
+
+const Router = require('koa-router');
+const koaBody = require('koa-body');
+
+
+const  {DataTypes,Sequelize} = require('sequelize')
 
 
 const koa = new Koa();
@@ -32,6 +36,10 @@ const User = sequelize.define('TodoTasks', {
         type: DataTypes.BOOLEAN,
     },
 });
+(async ()=>{
+    await sequelize.sync();//{ force: true }
+})();
+
 
 async function getData(){
     let theData = await User.findAll({
@@ -45,12 +53,12 @@ async function getData(){
 };
 
 async function addData(todo){ // принимает обьект task с полями title, completed
-    if(`${todo.completed}`&&todo.title){
-        await User.create({title:`${todo.title}`, completed:`${todo.completed}`});
-        console.log(`Add data: ${todo.completed} ${todo.title}`);
-
+    if(todo.title){
+        let addedTodo = await User.create({title:`${todo.title}`, completed:`${todo.completed}`});
+        return addedTodo.id;
     } else{
         console.log(`Data with: ${todo.completed} ${todo.title} not pushing`);
+        return "error";
     }
 };
 
@@ -91,64 +99,67 @@ async function changeTitleTodo(todoId, newTitle){
         where:{
             id:todoId
         },
-    });
-}
+    })
+};
 //getData();          ///dev
 ///end db connected
 
-
-/*router.options('/tasks', (ctx)=>{
-    ctx.set('Access-Control-Allow-Origin', '')
-});*/
-
-router.get('/tasks',(ctx)=>{ /// следует вернуть все таски
+/*
+router.options('/tasks', (ctx)=>{
+    ctx.set('Access-Control-Allow-Origin', 'http://localhost:3001');
+    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+});
+*/
+router.get('/tasks',async (ctx)=>{ /// следует вернуть все таски
     /*ctx.set('Access-Control-Allow-Origin', '*');
     ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');*/
-   /*
+    ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
+
      getData().then( (todos)=>{
         ctx.body = JSON.stringify(todos);
     })
-   */
-    (async()=>{
-        let todos = await getData();
-        ctx.body = JSON.stringify(todos);
-        console.log(todos);
-    })()
-})
-    .get('/tasks/:id',(ctx)=>{  // принимает id таски которую возвращяет
-        //ctx.body = "/tasks/:id";
-        getDataById(ctx.params.id).then((result)=>{
-            ctx.body = JSON.stringify(result[0].dataValues);
-            console.log(JSON.stringify(result[0].dataValues));
-        })
 
+    */
+        let todos = await getData();
+        ctx.body = (todos);
+        console.log(todos);
+})
+    .get('/tasks/:id', async (ctx)=>{  // принимает id таски которую возвращает
+        //ctx.body = "/tasks/:id";
+        let task = await getDataById(ctx.params.id);
+        ctx.body = task[0];
+        console.log(JSON.stringify(task));                ///// dev
     });
 
-
-router.post('/tasks', (ctx)=>{  // принимает обьект таски которую сетит в бд
+//{"title":"Buy ice","completed":false}
+router.post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд
     /*
     console.log(ctx.request.body); // принимаем
    //  = "hello";
     ctx.body = "hello"; // отвечаем
     */
     console.log(ctx.request.body);
-    let newTodo = JSON.parse(ctx.request.body);
-    addData(newTodo);
+    let newTodo = (ctx.request.body);
+    let id = await addData(newTodo);
+    newTodo.id = id
+    ctx.response.body = newTodo;
 });
 
-router.put('/tasks/:id/:newTitle',(ctx)=>{ // принимает id и новый title
+router.put('/tasks/change-title/:id/:newTitle',(ctx)=>{ // принимает id и новый title
     changeTitleTodo(ctx.params.id, ctx.params.newTitle);
 });
 
-router.delete('/tasks/:id/', (ctx)=>{ // принимает id на удаление
+router.put('/tasks/change-completed/:id',(ctx)=>{ // принимает id и меняет completed у соответвующей таски
+    changeCompleted(ctx.params.id);
+});
+
+router.delete('/tasks/:id', (ctx)=>{ // принимает id на удаление
     deleteData(ctx.params.id);
-})
+});
 
-
-
-
-koa.use(require('koa-body')())
+koa
+    .use(koaBody())
     .use(router.routes())
     .use(router.allowedMethods());
 
