@@ -27,11 +27,16 @@ export default {
   },
   methods: {
     changeEditTodos () {
+      //this.editTitle = this.todo.title;
+      if(this.editTodo){
+        this.$emit('changeTodoTitle', this.todo.id, this.editTitle);
+      }
       this.editTodo = !this.editTodo;
-      this.$emit('changeTodoTitle', this.index, this.editTitle);
+      this.editTitle = this.todo.title;
+
     },
     changeCompleted () {
-      this.$emit('changeTodoCompleted', this.index);
+      this.$emit('changeTodoCompleted', this.todo.id);
     },
     changeTodoTitle (StrTitle) {
       this.editTitle = StrTitle;

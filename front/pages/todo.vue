@@ -20,6 +20,7 @@
 <script>
 import TodoList from '@/components/TodoList.vue';
 import AddTodo from '@/components/AddTodo.vue';
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -38,24 +39,28 @@ export default {
     };
   },
   methods: {
-    saveTodos () {
-      localStorage.setItem('todos', JSON.stringify(this.todos));
-    },
-    pushTodo (newTodo) {
-      this.todos.push(newTodo);
-      this.saveTodos(); // сетим в local Storage
+    async pushTodo (newTodo) {
+       await axios.post('http://localhost:3001/tasks', newTodo).then((resp)=>{
+       this.todos.push(resp.data);
+     });
     },
     deleteTodo (id) {
-      this.todos = this.todos.filter(t => t.id !== id);
-      this.saveTodos(); // сетим в local Storage
+      axios.delete(`http://localhost:3001/tasks/${id}`).then(()=>{
+        this.todos = this.todos.filter(t => t.id !== id);
+      });
     },
-    changeTodoCompleted (index) {
-      this.todos[index].completed = !this.todos[index].completed;
-      this.saveTodos(); // сетим при изм completed
+    changeTodoCompleted (id) {
+      axios(`http://localhost:3001/tasks/change-completed/${id}`).then(()=>{
+        let todo = this.todos.filter((todo)=>todo.id == id);
+        todo[0].completed = !todo[0].completed;
+      });
     },
-    changeTodoTitle (index, StrTitle) {
-      this.todos[index].title = StrTitle;
-      this.saveTodos();// сетим при изменении title
+    changeTodoTitle (id, StrTitle) {
+
+      let index  = this.todos.findIndex((elm)=> elm.id == id);
+      axios.put(`http://localhost:3001/tasks/change-title/${id}/${StrTitle}`).then(()=>{
+        this.todos[index].title = StrTitle;
+      });
     },
   },
 
@@ -69,12 +74,9 @@ export default {
     },
   },
   mounted: function () {
-    // eslint-disable-next-line no-lone-blocks
-    {
-      if (JSON.parse(localStorage.getItem('todos'))) {
-        this.todos = JSON.parse(localStorage.getItem('todos'));// читаем
-      } else localStorage.setItem('todos', JSON.stringify(this.todos));
-    }
+    axios.get('http://localhost:3001/tasks').then((response)=>{
+      this.todos = response.data;
+    });
   },
 };
 

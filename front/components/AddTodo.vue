@@ -23,7 +23,6 @@ export default {
     createTodo () {
       if (this.valueTodo) {
         const NewTodo = {
-          id: Date.now(),
           title: this.valueTodo,
           completed: false,
         };
