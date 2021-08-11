@@ -5,7 +5,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    'plugin:@web-bee-ru/base', // js/ts only
+    //'plugin:@web-bee-ru/base', // js/ts only
 
     // npm i --save-dev eslint-plugin-vue
     //"plugin:@web-bee-ru/vue", // vue
