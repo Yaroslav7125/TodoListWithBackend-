@@ -44,12 +44,12 @@ async function getData(){
     return todos;
 };
 
-async function addData(todo){
-    if(todo.completed&&todo.title){
+async function addData(todo){ // принимает обьект task с полями title, completed
+    if(`${todo.completed}`&&todo.title){
         await User.create({title:`${todo.title}`, completed:`${todo.completed}`});
         console.log(`Add data: ${todo.completed} ${todo.title}`);
-    }
-    else{
+
+    } else{
         console.log(`Data with: ${todo.completed} ${todo.title} not pushing`);
     }
 };
@@ -84,10 +84,15 @@ async function changeCompleted(dataId){//принимает id элемента 
             });
         })();
     });
-
-
 };
 
+async function changeTitleTodo(todoId, newTitle){
+    await User.update({title:newTitle}, {
+        where:{
+            id:todoId
+        },
+    });
+}
 //getData();          ///dev
 ///end db connected
 
@@ -100,25 +105,46 @@ router.get('/tasks',(ctx)=>{ /// следует вернуть все таски
     /*ctx.set('Access-Control-Allow-Origin', '*');
     ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     ctx.set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');*/
-    todosArr = new Array();
-    getData().then((todos)=>{
-       todosArr = todos;
-    }).then(()=>{
-        ctx  = todosArr;
+   /*
+     getData().then( (todos)=>{
+        ctx.body = JSON.stringify(todos);
     })
-
-
+   */
+    (async()=>{
+        let todos = await getData();
+        ctx.body = JSON.stringify(todos);
+        console.log(todos);
+    })()
 })
-    .get('/tasks/:id',(ctx)=>{
-        ctx.body = "/tasks/:id";
+    .get('/tasks/:id',(ctx)=>{  // принимает id таски которую возвращяет
+        //ctx.body = "/tasks/:id";
+        getDataById(ctx.params.id).then((result)=>{
+            ctx.body = JSON.stringify(result[0].dataValues);
+            console.log(JSON.stringify(result[0].dataValues));
+        })
+
     });
 
 
-router.post('/tasks', (ctx)=>{
-    console.log(ctx.request.body);
+router.post('/tasks', (ctx)=>{  // принимает обьект таски которую сетит в бд
+    /*
+    console.log(ctx.request.body); // принимаем
    //  = "hello";
-    ctx.body = "hello";
+    ctx.body = "hello"; // отвечаем
+    */
+    console.log(ctx.request.body);
+    let newTodo = JSON.parse(ctx.request.body);
+    addData(newTodo);
 });
+
+router.put('/tasks/:id/:newTitle',(ctx)=>{ // принимает id и новый title
+    changeTitleTodo(ctx.params.id, ctx.params.newTitle);
+});
+
+router.delete('/tasks/:id/', (ctx)=>{ // принимает id на удаление
+    deleteData(ctx.params.id);
+})
+
 
 
 
