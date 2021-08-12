@@ -30,17 +30,13 @@ export default {
   },
   data () {
     return {
-      todos: [
-        { id: 1, title: 'купить хлеп', completed: false },
-        { id: 2, title: 'купить матрас', completed: false },
-        { id: 3, title: 'купить сено', completed: false },
-      ],
+      todos: Array,
       userInput: '',
     };
   },
   methods: {
     async pushTodo (newTodo) {
-       await axios.post('http://localhost:3001/tasks', newTodo).then((resp)=>{
+        axios.post('http://localhost:3001/tasks', newTodo).then((resp)=>{
        this.todos.push(resp.data);
      });
     },
@@ -49,9 +45,9 @@ export default {
         this.todos = this.todos.filter(t => t.id !== id);
       });
     },
-    changeTodoCompleted (id) {
-      axios(`http://localhost:3001/tasks/change-completed/${id}`).then(()=>{
-        let todo = this.todos.filter((todo)=>todo.id == id);
+     changeTodoCompleted (id) {
+       let todo = this.todos.filter((todo)=>todo.id == id);
+       axios.put(`http://localhost:3001/tasks/change-completed/${id}/${!todo[0].completed}`).then(()=>{
         todo[0].completed = !todo[0].completed;
       });
     },

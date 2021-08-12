@@ -1,6 +1,6 @@
 const cors = require('@koa/cors');
 const Koa = require('koa');
-const  {DataTypes,Sequelize} = require('sequelize');
+const  {DataTypes,Sequelize, BOOLEAN} = require('sequelize');
 const Router = require('koa-router');
 const koaBody = require('koa-body');
 
@@ -22,6 +22,7 @@ const User = sequelize.define('TodoTasks', {
         type: DataTypes.BOOLEAN,
     },
 });
+
 (async ()=>{
     await sequelize.sync();//{ force: true }
 })();
@@ -65,11 +66,11 @@ async function getDataById(dataId){ // принимает id элемента - 
     return theData;
 };
 
-async function changeCompleted(dataId){//принимает id элемента который нужно изменить
+async function changeCompleted(dataId, complFlag){//принимает id элемента который нужно изменить
     getDataById(dataId).then((data)=>{
         const todo = data[0].dataValues;
         (async ()=>{
-            await User.update({completed:!todo.completed}, {
+            await User.update({completed:complFlag}, {
                 where:{
                     id:todo.id,
                 },
@@ -90,7 +91,12 @@ async function changeTitleTodo(todoId, newTitle){
 ///end db connected
 router.get('/tasks',async (ctx)=>{ /// следует вернуть все таски        READ
         let todos = await getData();
-        ctx.body = (todos);
+        if(todos.length){
+            ctx.body = (todos);
+        } else {
+            ctx.status = 204;
+            ctx.body = 'No content';
+        }
 })
     .get('/tasks/:id', async (ctx)=>{  // принимает id таски которую возвращает        READ
         let task = await getDataById(ctx.params.id);
@@ -98,8 +104,7 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
     });
 router.post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
     let newTodo = (ctx.request.body);
-    let id = await addData(newTodo);
-    newTodo.id = id;
+    newTodo.id = await addData(newTodo);
     ctx.response.body = newTodo;
 });
 
@@ -107,14 +112,17 @@ router.put('/tasks/change-title/:id/:newTitle', async (ctx)=>{ // принима
    ctx.body = await changeTitleTodo(ctx.params.id, ctx.params.newTitle);
 });
 
-router.put('/tasks/change-completed/:id',(ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
-    changeCompleted(ctx.params.id);
+router.put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
+    await changeCompleted(ctx.params.id, ctx.params.completFlag);
+    ctx.body = 'Accepted';
+    ctx.status = 202;
 });
 
-router.delete('/tasks/:id', (ctx)=>{ // принимает id на удаление       DELETE
-    deleteData(ctx.params.id);
+router.delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
+    await deleteData(ctx.params.id);
     ctx.body = {id:ctx.params.id};
 });
+
 koa
     .use(koaBody())
     .use(router.routes())
