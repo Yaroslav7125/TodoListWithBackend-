@@ -3,6 +3,7 @@ const Koa = require('koa');
 const  {DataTypes,Sequelize, BOOLEAN} = require('sequelize');
 const Router = require('koa-router');
 const koaBody = require('koa-body');
+let todos = require('./models/testusers');
 
 const koa = new Koa();
 const router = new Router();
@@ -14,14 +15,7 @@ const sequelize = new Sequelize('TodoDB', 'postgres', '123', {
     dialect: 'postgres',
 });
 
-const User = sequelize.define('TodoTasks', {
-    title: {
-        type: DataTypes.TEXT,
-    },
-    completed: {
-        type: DataTypes.BOOLEAN,
-    },
-});
+let User = todos(sequelize, DataTypes);
 
 (async ()=>{
     await sequelize.sync();//{ force: true }
