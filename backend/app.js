@@ -3,7 +3,7 @@ const Koa = require('koa');
 const  {DataTypes,Sequelize, BOOLEAN} = require('sequelize');
 const Router = require('koa-router');
 const koaBody = require('koa-body');
-let todos = require('./models/testusers');
+let todos = require('./models/todoes');
 
 const koa = new Koa();
 const router = new Router();
@@ -15,14 +15,14 @@ const sequelize = new Sequelize('TodoDB', 'postgres', '123', {
     dialect: 'postgres',
 });
 
-let User = todos(sequelize, DataTypes);
+let DBtodos = todos(sequelize, DataTypes);
 
 (async ()=>{
     await sequelize.sync();//{ force: true }
 })();
 
 async function getData(){
-    let theData = await User.findAll({
+    let theData = await DBtodos.findAll({
         attributes: ['id', 'title', 'completed'],
     });
     let todos = [];
@@ -34,7 +34,7 @@ async function getData(){
 
 async function addData(todo){ // принимает обьект task с полями title, completed
     if(todo.title){
-        let addedTodo = await User.create({title:`${todo.title}`, completed:`${todo.completed}`});
+        let addedTodo = await DBtodos.create({title:`${todo.title}`, completed:`${todo.completed}`});
         return addedTodo.id;
     } else{
         return 'error';
@@ -42,7 +42,7 @@ async function addData(todo){ // принимает обьект task с пол�
 };
 
 async function deleteData(delId){ // принимает id элемента который следует удалить
-    await User.destroy({
+    await DBtodos.destroy({
         attributes: ['id', 'title', 'completed'],
         where:{
            id:delId,
@@ -51,7 +51,7 @@ async function deleteData(delId){ // принимает id элемента ко
 };
 
 async function getDataById(dataId){ // принимает id элемента - который вернёт
-    let theData = await User.findAll({
+    let theData = await DBtodos.findAll({
         attributes: ['id', 'title', 'completed'],
         where:{
             id: dataId,
@@ -64,7 +64,7 @@ async function changeCompleted(dataId, complFlag){//принимает id эле
     getDataById(dataId).then((data)=>{
         const todo = data[0].dataValues;
         (async ()=>{
-            await User.update({completed:complFlag}, {
+            await DBtodos.update({completed:complFlag}, {
                 where:{
                     id:todo.id,
                 },
@@ -74,7 +74,7 @@ async function changeCompleted(dataId, complFlag){//принимает id эле
 };
 
 async function changeTitleTodo(todoId, newTitle){
-    const changedTodo = await User.update({title:newTitle}, {
+    const changedTodo = await DBtodos.update({title:newTitle}, {
         where:{
             id:todoId,
         },

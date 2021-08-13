@@ -37,7 +37,10 @@ export default {
   methods: {
     async pushTodo (newTodo) {
         axios.post('http://localhost:3001/tasks', newTodo).then((resp)=>{
-       this.todos.push(resp.data);
+       //this.todos.push(resp.data);
+       axios.get('http://localhost:3001/tasks').then((response)=>{
+         this.todos = response.data;
+       });
      });
     },
     deleteTodo (id) {
@@ -75,6 +78,7 @@ export default {
     });
   },
 };
+
 
 </script>
 
