@@ -69,7 +69,7 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
             ctx.body = (todos);
         } else {
             ctx.status = 204;
-            ctx.body = 'No content';
+            ctx.body = [];
         }
 })
     .post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
