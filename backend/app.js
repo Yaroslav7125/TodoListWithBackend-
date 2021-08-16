@@ -31,7 +31,7 @@ async function getTodos(){
 
 async function addTodo(todo){ // принимает обьект task с полями title, completed
     if(todo.title){
-        let addedTodo = await dbTodos.create({title:`${todo.title}`, completed:`${todo.completed}`});
+        let addedTodo = await dbTodos.create({title:`${todo.title}`, completed:todo.completed});
         return addedTodo.id;
     } else{
         return 'error';
