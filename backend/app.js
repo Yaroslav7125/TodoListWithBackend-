@@ -4,22 +4,21 @@ const  {DataTypes,Sequelize} = require('sequelize');
 const Router = require('koa-router');
 const koaBody = require('koa-body');
 let todos = require('./models/todoes');
+require('dotenv').config();
 
 const koa = new Koa();
 const router = new Router();
 koa.use(cors());
 
+
 /// db connecting
-const sequelize = new Sequelize('TodoDB', 'postgres', '123', {
+const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
     host: 'localhost',
     dialect: 'postgres',
 });
 
 let dbTodos = todos(sequelize, DataTypes);
 
-(async ()=>{
-    await sequelize.sync();//{ force: true }
-})();
 
 async function getData(){
     let theData = await dbTodos.findAll({
@@ -122,4 +121,5 @@ koa
     .use(router.routes())
     .use(router.allowedMethods());
 
-koa.listen(3001);
+koa.listen(process.env.PORT || 3000);
+
