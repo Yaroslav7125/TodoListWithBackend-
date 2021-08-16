@@ -10,7 +10,6 @@ const koa = new Koa();
 const router = new Router();
 koa.use(cors());
 
-
 /// db connecting
 const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
     host: 'localhost',
@@ -18,7 +17,6 @@ const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LO
 });
 
 let dbTodos = todos(sequelize, DataTypes);
-
 
 async function getTodos(){
     let theTodo = await dbTodos.findAll({
@@ -32,9 +30,9 @@ async function getTodos(){
 async function addTodo(todo){ // принимает обьект task с полями title, completed
     if(todo.title){
         let addedTodo = await dbTodos.create({title:`${todo.title}`, completed:todo.completed});
-        return addedTodo.id;
+        return addedTodo.dataValues;
     } else{
-        return 'error';
+        return {};
     }
 };
 
