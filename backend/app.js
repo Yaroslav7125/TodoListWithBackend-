@@ -3,7 +3,7 @@ const Koa = require('koa');
 const  {DataTypes,Sequelize} = require('sequelize');
 const Router = require('koa-router');
 const koaBody = require('koa-body');
-let todos = require('./models/todoes');
+let todos = require('./models/todostable');
 require('dotenv').config();
 
 const koa = new Koa();
