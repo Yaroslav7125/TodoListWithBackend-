@@ -45,7 +45,7 @@ async function deleteTodo(todoId){ // принимает id элемента к�
 };
 
 async function changeCompleted(todoId, complFlag){//принимает id элемента который нужно изменить
-    let a = await dbTodos.update({completed:complFlag}, {
+     await dbTodos.update({completed:complFlag}, {
         where:{
             id:todoId,
         },
@@ -78,13 +78,10 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
     ctx.response.body = newTodo;
 })
     .put('/tasks/change-title/:id', async (ctx)=>{ // принимает id и новый title     UPDATE
-        ctx.status = 200;
         ctx.body = await changeTitleTodo(ctx.params.id, ctx.request.body.strTitle);
 })
     .put('/tasks/change-completed/:id', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
-        await changeCompleted(ctx.params.id, ctx.request.body.todoCompleted);
-        ctx.body = 'Accepted';
-        ctx.status = 202;
+        ctx.body = await changeCompleted(ctx.params.id, ctx.request.body.todoCompleted);
 })
     .delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
     await deleteTodo(ctx.params.id);
