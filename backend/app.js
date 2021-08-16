@@ -44,17 +44,6 @@ async function deleteTodo(todoId){ // принимает id элемента к�
     });
 };
 
-async function getTodosById(todoId){ // принимает id элемента - который вернёт
-    return dbTodos.findByPk(todoId);
-    let theTodo = await dbTodos.findAll({
-        attributes: ['id', 'title', 'completed'],
-        where:{
-            id: todoId,
-        },
-    });
-    return theTodo;
-};
-
 async function changeCompleted(todoId, complFlag){//принимает id элемента который нужно изменить
     let a = await dbTodos.update({completed:complFlag}, {
         where:{
@@ -83,27 +72,20 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
             ctx.body = 'No content';
         }
 })
-    .get('/tasks/:id', async (ctx)=>{  // принимает id таски которую возвращает        READ
-        let task = await getTodosById(ctx.params.id);
-        ctx.body = task[0];         ///// dev
-    });
-router.post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
+    .post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
     let newTodo = (ctx.request.body);
     newTodo.id = await addTodo(newTodo);
     ctx.response.body = newTodo;
-});
-
-router.put('/tasks/change-title/:id/:newTitle', async (ctx)=>{ // принимает id и новый title     UPDATE
+})
+    .put('/tasks/change-title/:id/:newTitle', async (ctx)=>{ // принимает id и новый title     UPDATE
    ctx.body = await changeTitleTodo(ctx.params.id, ctx.params.newTitle);
-});
-
-router.put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
+})
+    .put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
     await changeCompleted(ctx.params.id, ctx.params.completFlag);
     ctx.body = 'Accepted';
     ctx.status = 202;
-});
-
-router.delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
+})
+    .delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
     await deleteTodo(ctx.params.id);
     ctx.body = {id:ctx.params.id};
 });
