@@ -20,18 +20,16 @@ const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LO
 let dbTodos = todos(sequelize, DataTypes);
 
 
-async function getData(){
-    let theData = await dbTodos.findAll({
+async function getTodos(){
+    let theTodo = await dbTodos.findAll({
         attributes: ['id', 'title', 'completed'],
     });
-    let todos = [];
-    theData.forEach((elm)=>{
-        todos.push(elm.dataValues);
+    return theTodo.map((elm)=>{
+        return elm.dataValues;
     });
-    return todos;
 };
 
-async function addData(todo){ // принимает обьект task с полями title, completed
+async function addTodo(todo){ // принимает обьект task с полями title, completed
     if(todo.title){
         let addedTodo = await dbTodos.create({title:`${todo.title}`, completed:`${todo.completed}`});
         return addedTodo.id;
@@ -40,28 +38,27 @@ async function addData(todo){ // принимает обьект task с пол�
     }
 };
 
-async function deleteData(delId){ // принимает id элемента который следует удалить
+async function deleteTodo(todoId){ // принимает id элемента который следует удалить
     await dbTodos.destroy({
-        attributes: ['id', 'title', 'completed'],
         where:{
-           id:delId,
+           id:todoId,
        },
     });
 };
 
-async function getDataById(dataId){ // принимает id элемента - который вернёт
-    let theData = await dbTodos.findAll({
+async function getTodosById(todoId){ // принимает id элемента - который вернёт
+    let theTodo = await dbTodos.findAll({
         attributes: ['id', 'title', 'completed'],
         where:{
-            id: dataId,
+            id: todoId,
         },
     });
-    return theData;
+    return theTodo;
 };
 
-async function changeCompleted(dataId, complFlag){//принимает id элемента который нужно изменить
-    getDataById(dataId).then((data)=>{
-        const todo = data[0].dataValues;
+async function changeCompleted(todoId, complFlag){//принимает id элемента который нужно изменить
+    getTodosById(todoId).then((todoArr)=>{
+        const todo = todoArr[0].dataValues;
         (async ()=>{
             await dbTodos.update({completed:complFlag}, {
                 where:{
@@ -83,7 +80,7 @@ async function changeTitleTodo(todoId, newTitle){
 
 ///end db connected
 router.get('/tasks',async (ctx)=>{ /// следует вернуть все таски        READ
-        let todos = await getData();
+        let todos = await getTodos();
         if(todos.length){
             ctx.body = (todos);
         } else {
@@ -92,12 +89,12 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
         }
 })
     .get('/tasks/:id', async (ctx)=>{  // принимает id таски которую возвращает        READ
-        let task = await getDataById(ctx.params.id);
+        let task = await getTodosById(ctx.params.id);
         ctx.body = task[0];         ///// dev
     });
 router.post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
     let newTodo = (ctx.request.body);
-    newTodo.id = await addData(newTodo);
+    newTodo.id = await addTodo(newTodo);
     ctx.response.body = newTodo;
 });
 
@@ -112,7 +109,7 @@ router.put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // при�
 });
 
 router.delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
-    await deleteData(ctx.params.id);
+    await deleteTodo(ctx.params.id);
     ctx.body = {id:ctx.params.id};
 });
 
