@@ -19,9 +19,7 @@ const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LO
 let dbTodos = todos(sequelize, DataTypes);
 
 async function getTodos(){
-    let theTodo = await dbTodos.findAll({
-        attributes: ['id', 'title', 'completed'],
-    });
+    let theTodo = await dbTodos.findAll();
     return theTodo.map((elm)=>{
         return elm.dataValues;
     });
@@ -45,21 +43,19 @@ async function deleteTodo(todoId){ // принимает id элемента к�
 };
 
 async function changeCompleted(todoId, complFlag){//принимает id элемента который нужно изменить
-     await dbTodos.update({completed:complFlag}, {
+    return (await dbTodos.update({completed:complFlag}, {
         where:{
             id:todoId,
-        },
-    });
-    ;
+        },returning:true,
+    }))[1][0].dataValues;
 };
 
 async function changeTitleTodo(todoId, newTitle){
-     await dbTodos.update({title:newTitle}, {
+     return (await dbTodos.update({title:newTitle}, {
         where:{
             id:todoId,
-        },
-    });
-    return (await dbTodos.findByPk(todoId)).dataValues;
+        }, returning:true,
+    }))[1][0].dataValues;
 };
 
 ///end db connected
@@ -73,9 +69,8 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
         }
 })
     .post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
-    let newTodo = (ctx.request.body);
-    newTodo = await addTodo(newTodo);
-    ctx.response.body = newTodo;
+        let newTodo = (ctx.request.body);
+        ctx.response.body = await addTodo(newTodo);
 })
     .put('/tasks/change-title/:id', async (ctx)=>{ // принимает id и новый title     UPDATE
         ctx.body = await changeTitleTodo(ctx.params.id, ctx.request.body.strTitle);
