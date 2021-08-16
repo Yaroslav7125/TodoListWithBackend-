@@ -74,11 +74,12 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
 })
     .post('/tasks', async (ctx)=>{  // принимает обьект таски которую сетит в бд      CREATE
     let newTodo = (ctx.request.body);
-    newTodo.id = await addTodo(newTodo);
+    newTodo = await addTodo(newTodo);
     ctx.response.body = newTodo;
 })
-    .put('/tasks/change-title/:id/:newTitle', async (ctx)=>{ // принимает id и новый title     UPDATE
-   ctx.body = await changeTitleTodo(ctx.params.id, ctx.params.newTitle);
+    .put('/tasks/change-title/:id', async (ctx)=>{ // принимает id и новый title     UPDATE
+        ctx.status = 200;
+        ctx.body = await changeTitleTodo(ctx.params.id, ctx.request.body.strTitle);
 })
     .put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
     await changeCompleted(ctx.params.id, ctx.params.completFlag);

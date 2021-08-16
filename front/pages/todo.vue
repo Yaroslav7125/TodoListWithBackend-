@@ -37,7 +37,6 @@ export default {
   methods: {
     async pushTodo (newTodo) {
         axios.post('http://localhost:3001/tasks', newTodo).then((resp)=>{
-       //this.todos.push(resp.data);
        axios.get('http://localhost:3001/tasks').then((response)=>{
          this.todos = response.data;
        });
@@ -54,11 +53,11 @@ export default {
         todo[0].completed = !todo[0].completed;
       });
     },
-    changeTodoTitle (id, StrTitle) {
+    changeTodoTitle (id, strTitle) {
 
       let index  = this.todos.findIndex((elm)=> elm.id == id);
-      axios.put(`http://localhost:3001/tasks/change-title/${id}/${StrTitle}`).then(()=>{
-        this.todos[index].title = StrTitle;
+      axios.put(`http://localhost:3001/tasks/change-title/${id}`, {strTitle:strTitle}).then(()=>{
+        this.todos[index].title = strTitle;
       });
     },
   },
