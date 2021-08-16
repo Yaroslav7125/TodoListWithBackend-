@@ -45,6 +45,7 @@ async function deleteTodo(todoId){ // принимает id элемента к�
 };
 
 async function getTodosById(todoId){ // принимает id элемента - который вернёт
+    return dbTodos.findByPk(todoId);
     let theTodo = await dbTodos.findAll({
         attributes: ['id', 'title', 'completed'],
         where:{
@@ -55,16 +56,12 @@ async function getTodosById(todoId){ // принимает id элемента -
 };
 
 async function changeCompleted(todoId, complFlag){//принимает id элемента который нужно изменить
-    getTodosById(todoId).then((todoArr)=>{
-        const todo = todoArr[0].dataValues;
-        (async ()=>{
-            await dbTodos.update({completed:complFlag}, {
-                where:{
-                    id:todo.id,
-                },
-            });
-        })();
+    let a = await dbTodos.update({completed:complFlag}, {
+        where:{
+            id:todoId,
+        },
     });
+    return (await dbTodos.findByPk(todoId)).dataValues;
 };
 
 async function changeTitleTodo(todoId, newTitle){
