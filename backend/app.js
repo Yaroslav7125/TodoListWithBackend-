@@ -50,16 +50,16 @@ async function changeCompleted(todoId, complFlag){//принимает id эле
             id:todoId,
         },
     });
-    return (await dbTodos.findByPk(todoId)).dataValues;
+    ;
 };
 
 async function changeTitleTodo(todoId, newTitle){
-    const changedTodo = await dbTodos.update({title:newTitle}, {
+     await dbTodos.update({title:newTitle}, {
         where:{
             id:todoId,
         },
     });
-    return changedTodo;
+    return (await dbTodos.findByPk(todoId)).dataValues;
 };
 
 ///end db connected
