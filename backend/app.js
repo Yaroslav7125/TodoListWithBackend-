@@ -81,10 +81,10 @@ router.get('/tasks',async (ctx)=>{ /// следует вернуть все та
         ctx.status = 200;
         ctx.body = await changeTitleTodo(ctx.params.id, ctx.request.body.strTitle);
 })
-    .put('/tasks/change-completed/:id/:completFlag', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
-    await changeCompleted(ctx.params.id, ctx.params.completFlag);
-    ctx.body = 'Accepted';
-    ctx.status = 202;
+    .put('/tasks/change-completed/:id', async (ctx)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
+        await changeCompleted(ctx.params.id, ctx.request.body.todoCompleted);
+        ctx.body = 'Accepted';
+        ctx.status = 202;
 })
     .delete('/tasks/:id', async (ctx)=>{ // принимает id на удаление       DELETE
     await deleteTodo(ctx.params.id);

@@ -49,7 +49,7 @@ export default {
     },
      changeTodoCompleted (id) {
        let todo = this.todos.filter((todo)=>todo.id == id);
-       axios.put(`http://localhost:3001/tasks/change-completed/${id}/${!todo[0].completed}`).then(()=>{
+       axios.put(`http://localhost:3001/tasks/change-completed/${id}`, {todoCompleted:!todo[0].completed}).then(()=>{
         todo[0].completed = !todo[0].completed;
       });
     },
