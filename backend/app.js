@@ -12,20 +12,20 @@ koa.use(cors());
 
 /// db connecting
 const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-    host: 'localhost',
-    dialect: 'postgres',
+    host: process.env.HOST||'localhost',
+    dialect: process.env.DIALECT || 'postgres',
 });
 
 let dbTodos = todos(sequelize, DataTypes);
 
-async function getTodos(){
+async function getTodos(){ // возвращает все таски
     let theTodo = await dbTodos.findAll();
     return theTodo.map((elm)=>{
         return elm.dataValues;
     });
 };
 
-async function addTodo(todo){ // принимает обьект task с полями title, completed
+async function addTodo(todo){ // принимает обьект todo с полями title и completed, возвращает созданную туду
     if(todo.title){
         let addedTodo = await dbTodos.create({title:`${todo.title}`, completed:todo.completed});
         return addedTodo.dataValues;
@@ -50,7 +50,7 @@ async function changeCompleted(todoId, complFlag){//принимает id эле
     }))[1][0].dataValues;
 };
 
-async function changeTitleTodo(todoId, newTitle){
+async function changeTitleTodo(todoId, newTitle){ // принимает id tido и новый title к нему, возвращает новую tod'ушку
      return (await dbTodos.update({title:newTitle}, {
         where:{
             id:todoId,
