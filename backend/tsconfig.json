@@ -6,6 +6,6 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "strict": true,
-    "allowSyntheticDefaultImports": true
+    "outDir": "dist"
   }
 }

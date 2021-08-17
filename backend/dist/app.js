@@ -41,7 +41,7 @@ var Koa = require("koa");
 var sequelize_1 = require("sequelize");
 var Router = require("koa-router");
 var koaBody = require("koa-body");
-var todos = require("./models/todostable");
+var todos = require("../models/todostable");
 var dotenv = require("dotenv");
 dotenv.config();
 var koa = new Koa();
@@ -49,7 +49,7 @@ var router = new Router();
 koa.use(cors());
 var sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
     host: process.env.HOST || 'localhost',
-    dialect: 'postgres'
+    dialect: process.env.DIALECT
 });
 var dbTodos = todos(sequelize, sequelize_1.DataTypes);
 function getTodos() {
@@ -172,7 +172,7 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
                 _a = ctx;
                 return [4, changeTitleTodo(ctx.params.id, ctx.request.body.strTitle)];
             case 1:
-                _a.body = _b.sent();
+                _a.body = (_b.sent());
                 return [2];
         }
     });
@@ -185,7 +185,7 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
                 _a = ctx;
                 return [4, changeCompleted(ctx.params.id, ctx.request.body.todoCompleted)];
             case 1:
-                _a.body = _b.sent();
+                _a.body = (_b.sent());
                 return [2];
         }
     });

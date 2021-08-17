@@ -5,7 +5,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    //'plugin:@web-bee-ru/base', // js/ts only
+    'plugin:@web-bee-ru/base', // js/ts only
   ],
   parserOptions: {
     ecmaVersion: 12,
