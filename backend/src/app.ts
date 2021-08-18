@@ -71,27 +71,29 @@ async function changeTitleTodo(todoId: number, newTitle: string):Promise<Todo>{ 
 
 ///end db connected
 router.get('/tasks',async (ctx:Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext, Todo[]>)=>{ /// следует вернуть все таски        READ
-        let todos = await getTodos();
-        if(todos.length){
-            ctx.body = (todos);
-        } else {
-            ctx.status = 204;
-            ctx.body = [];
-        }
+    let todos = await getTodos();
+    if(todos.length){
+        ctx.body = (todos);
+    } else {
+        ctx.status = 204;
+        ctx.body = [];
+    }
 })
     .post('/tasks', async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext, Todo|{}>)=>{  // принимает обьект таски которую сетит в бд      CREATE
-        let newTodo:Todo = (ctx.request.body);
+        let newTodo = <Todo>ctx.request.body;
         ctx.response.body = await addTodo(newTodo);
-})
+    })
     .put('/tasks/change-title/:id', async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext, Todo|{}>)=>{ // принимает id и новый title     UPDATE
-        ctx.body = await changeTitleTodo(Number(ctx.params.id), ctx.request.body.strTitle) as Todo | {};
-})
+        let newTitle = <{strTitle:string}>ctx.request.body;
+        ctx.body = await changeTitleTodo(Number(<{id:string}>ctx.params.id), newTitle.strTitle) as Todo | {};
+    })
     .put('/tasks/change-completed/:id', async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext, Todo|{}>)=>{ // принимает id и меняет completed у соответвующей таски    UPDATE
-        ctx.body = await changeCompleted(Number(ctx.params.id), ctx.request.body.todoCompleted) as Todo | {};
-})
+        let newCompleted = <{todoCompleted:boolean}>ctx.request.body;
+        ctx.body = await changeCompleted(Number(<{id:string}>ctx.params.id), newCompleted.todoCompleted) as Todo | {};
+    })
     .delete('/tasks/:id', async (ctx: Koa.ParameterizedContext<Koa.DefaultState, Koa.DefaultContext, Todo|{}>)=>{ // принимает id на удаление       DELETE
-        ctx.body = await deleteTodo(ctx.params.id);
-});
+        ctx.body = await deleteTodo((<{id:number}>ctx.params).id);
+    });
 
 koa
     .use(koaBody())

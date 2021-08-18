@@ -155,7 +155,7 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
-                newTodo = (ctx.request.body);
+                newTodo = ctx.request.body;
                 _a = ctx.response;
                 return [4, addTodo(newTodo)];
             case 1:
@@ -165,12 +165,13 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
     });
 }); })
     .put('/tasks/change-title/:id', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a;
+    var newTitle, _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
+                newTitle = ctx.request.body;
                 _a = ctx;
-                return [4, changeTitleTodo(Number(ctx.params.id), ctx.request.body.strTitle)];
+                return [4, changeTitleTodo(Number(ctx.params.id), newTitle.strTitle)];
             case 1:
                 _a.body = (_b.sent());
                 return [2];
@@ -178,12 +179,13 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
     });
 }); })
     .put('/tasks/change-completed/:id', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a;
+    var newCompleted, _a;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
+                newCompleted = ctx.request.body;
                 _a = ctx;
-                return [4, changeCompleted(Number(ctx.params.id), ctx.request.body.todoCompleted)];
+                return [4, changeCompleted(Number(ctx.params.id), newCompleted.todoCompleted)];
             case 1:
                 _a.body = (_b.sent());
                 return [2];
