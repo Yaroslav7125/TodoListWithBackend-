@@ -1,0 +1,51 @@
+{
+  "name": "Backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./dist/app.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seeds": "npx sequelize-cli db:seed:all"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "dotenv": "^10.0.0",
+    "install": "^0.13.0",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^10.0.0",
+    "npm": "^7.20.5",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa__cors": "^3.0.3",
+    "@types/koa-router": "^7.4.4",
+    "@types/node": "^16.6.1",
+    "@types/validator": "^13.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "@web-bee-ru/eslint-plugin": "^0.6.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-import-resolver-node": "^0.3.5",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-unicorn": "^35.0.0",
+    "nodemon": "^2.0.12",
+    "sequelize-cli": "^6.2.0",
+    "typescript": "^4.3.5"
+  }
+}
