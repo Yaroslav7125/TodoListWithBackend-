@@ -96,7 +96,7 @@ function deleteTodo(todoId) {
                     })];
                 case 1:
                     _a.sent();
-                    return [2];
+                    return [2, todoId];
             }
         });
     });
@@ -170,7 +170,7 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
         switch (_b.label) {
             case 0:
                 _a = ctx;
-                return [4, changeTitleTodo(ctx.params.id, ctx.request.body.strTitle)];
+                return [4, changeTitleTodo(Number(ctx.params.id), ctx.request.body.strTitle)];
             case 1:
                 _a.body = (_b.sent());
                 return [2];
@@ -183,19 +183,21 @@ router.get('/tasks', function (ctx) { return __awaiter(void 0, void 0, void 0, f
         switch (_b.label) {
             case 0:
                 _a = ctx;
-                return [4, changeCompleted(ctx.params.id, ctx.request.body.todoCompleted)];
+                return [4, changeCompleted(Number(ctx.params.id), ctx.request.body.todoCompleted)];
             case 1:
                 _a.body = (_b.sent());
                 return [2];
         }
     });
 }); })["delete"]('/tasks/:id', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4, deleteTodo(ctx.params.id)];
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _a = ctx;
+                return [4, deleteTodo(ctx.params.id)];
             case 1:
-                _a.sent();
-                ctx.body = { id: ctx.params.id };
+                _a.body = _b.sent();
                 return [2];
         }
     });
