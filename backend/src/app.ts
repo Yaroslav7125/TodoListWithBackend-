@@ -6,6 +6,9 @@ import * as koaBody from 'koa-body';
 // @ts-ignore
 import * as todos from '../models/todostable';
 import * as dotenv from 'dotenv';
+// @ts-ignore
+import * as dbConfig from '../config/config';
+
 dotenv.config();
 
 const koa = new Koa();
@@ -19,13 +22,16 @@ type Todo = {
     updatedAt?:Date,
     createdAt?:Date,
 };
-
 /// db connecting
-const sequelize = new Sequelize(process.env.DB_NAME||'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-    host: process.env.HOST||'localhost',
-    dialect: process.env.DIALECT as Dialect |'postgres',
-});
-
+let sequelize:Sequelize;
+if(process.env.NODE_ENV){
+    sequelize = new Sequelize(dbConfig[process.env.NODE_ENV]);
+} else {
+    sequelize = new Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
+        host: 'db',
+        dialect: process.env.DIALECT as Dialect || 'postgres',
+    });
+}
 let dbTodos = todos(sequelize, DataTypes);
 
 async function getTodos() :Promise<Todo[]>{ // возвращает все таски
@@ -47,8 +53,8 @@ async function addTodo(todo: { title: string; completed: boolean; }):Promise<Tod
 async function deleteTodo(todoId: number):Promise<number>{ // принимает id элемента который следует удалить
     await dbTodos.destroy({
         where:{
-           id:todoId,
-       },
+            id:todoId,
+        },
     });
     return todoId;
 };
@@ -62,7 +68,7 @@ async function changeCompleted(todoId: number, complFlag: boolean) :Promise<Todo
 };
 
 async function changeTitleTodo(todoId: number, newTitle: string):Promise<Todo>{ // принимает id tido и новый title к нему, возвращает новую tod'ушку
-     return (await dbTodos.update({title:newTitle}, {
+    return (await dbTodos.update({title:newTitle}, {
         where:{
             id:todoId,
         }, returning:true,
@@ -101,4 +107,6 @@ koa
     .use(router.allowedMethods());
 
 koa.listen(process.env.PORT || 3000);
+// eslint-disable-next-line no-console
+console.log(`listen on port: ${process.env.PORT || 3000}`);
 

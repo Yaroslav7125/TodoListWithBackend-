@@ -43,14 +43,21 @@ var Router = require("koa-router");
 var koaBody = require("koa-body");
 var todos = require("../models/todostable");
 var dotenv = require("dotenv");
+var dbConfig = require("../config/config");
 dotenv.config();
 var koa = new Koa();
 var router = new Router();
 koa.use(cors());
-var sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-    host: process.env.HOST || 'localhost',
-    dialect: process.env.DIALECT
-});
+var sequelize;
+if (process.env.NODE_ENV) {
+    sequelize = new sequelize_1.Sequelize(dbConfig[process.env.NODE_ENV]);
+}
+else {
+    sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
+        host: 'db',
+        dialect: process.env.DIALECT
+    });
+}
 var dbTodos = todos(sequelize, sequelize_1.DataTypes);
 function getTodos() {
     return __awaiter(this, void 0, void 0, function () {
@@ -209,4 +216,5 @@ koa
     .use(router.routes())
     .use(router.allowedMethods());
 koa.listen(process.env.PORT || 3000);
+console.log("listen on port: " + (process.env.PORT || 3000));
 //# sourceMappingURL=app.js.map
