@@ -1,0 +1,28 @@
+# Use postgres/example user/password credentials
+version: '3.3'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: TodoDB
+
+  back:
+    build:
+      ./backend
+    restart: always
+    ports:
+      - 3001:3001
+    environment:
+      HOST: db
+  front:
+    build:
+      ./frontend
+    restart: always
+    ports:
+      - 3000:3000
