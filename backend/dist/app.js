@@ -54,8 +54,8 @@ if (process.env.NODE_ENV) {
 }
 else {
     sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-        host: 'db',
-        dialect: process.env.DIALECT
+        host: process.env.DIALECT || 'db',
+        dialect: process.env.DIALECT || 'postgres'
     });
 }
 var dbTodos = todos(sequelize, sequelize_1.DataTypes);

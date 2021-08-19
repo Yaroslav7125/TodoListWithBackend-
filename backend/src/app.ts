@@ -28,7 +28,7 @@ if(process.env.NODE_ENV){
     sequelize = new Sequelize(dbConfig[process.env.NODE_ENV]);
 } else {
     sequelize = new Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-        host: 'db',
+        host: process.env.DIALECT || 'db',
         dialect: process.env.DIALECT as Dialect || 'postgres',
     });
 }
