@@ -43,21 +43,14 @@ var Router = require("koa-router");
 var koaBody = require("koa-body");
 var todos = require("../models/todostable");
 var dotenv = require("dotenv");
-var dbConfig = require("../config/config");
 dotenv.config();
 var koa = new Koa();
 var router = new Router();
 koa.use(cors());
-var sequelize;
-if (process.env.NODE_ENV) {
-    sequelize = new sequelize_1.Sequelize(dbConfig[process.env.NODE_ENV]);
-}
-else {
-    sequelize = new sequelize_1.Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-        host: process.env.DIALECT || 'db',
-        dialect: process.env.DIALECT || 'postgres'
-    });
-}
+var sequelize = new sequelize_1.Sequelize(process.env.DB_NAME, process.env.DB_LOGIN, process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: process.env.DIALECT
+});
 var dbTodos = todos(sequelize, sequelize_1.DataTypes);
 function getTodos() {
     return __awaiter(this, void 0, void 0, function () {

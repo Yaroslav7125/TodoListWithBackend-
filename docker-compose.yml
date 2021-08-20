@@ -1,5 +1,5 @@
 # Use postgres/example user/password credentials
-version: '3.3'
+version: '3.4'
 
 services:
 
@@ -11,7 +11,6 @@ services:
     environment:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: TodoDB
-
   back:
     build:
       ./backend
@@ -20,9 +19,14 @@ services:
       - 3001:3001
     environment:
       HOST: db
+      MODE: prod
+    depends_on:
+      - db
   front:
     build:
       ./frontend
     restart: always
     ports:
       - 3000:3000
+    depends_on:
+      - back

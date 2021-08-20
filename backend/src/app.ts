@@ -6,9 +6,6 @@ import * as koaBody from 'koa-body';
 // @ts-ignore
 import * as todos from '../models/todostable';
 import * as dotenv from 'dotenv';
-// @ts-ignore
-import * as dbConfig from '../config/config';
-
 dotenv.config();
 
 const koa = new Koa();
@@ -23,15 +20,12 @@ type Todo = {
     createdAt?:Date,
 };
 /// db connecting
-let sequelize:Sequelize;
-if(process.env.NODE_ENV){
-    sequelize = new Sequelize(dbConfig[process.env.NODE_ENV]);
-} else {
-    sequelize = new Sequelize(process.env.DB_NAME || 'TodoDB', process.env.DB_LOGIN || 'postgres', process.env.DB_PASSWORD || '123', {
-        host: process.env.DIALECT || 'db',
-        dialect: process.env.DIALECT as Dialect || 'postgres',
-    });
-}
+// @ts-ignore
+let sequelize = new Sequelize( process.env.DB_NAME,  process.env.DB_LOGIN,   process.env.DB_PASSWORD, {
+        host: process.env.DB_HOST,
+        dialect: process.env.DIALECT,
+});
+
 let dbTodos = todos(sequelize, DataTypes);
 
 async function getTodos() :Promise<Todo[]>{ // возвращает все таски
